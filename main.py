@@ -24,6 +24,7 @@ async def on_ready():
     await bot.tree.sync(guild=discord.Object(id=1423048695259201640))
     print(f"Good Nomnomnomming!")
 
+
 #code for adding a role via reaction
 @bot.event
 async def on_raw_reaction_add(payload):
@@ -94,5 +95,8 @@ async def roles(interaction: discord.Interaction):
 
     await interaction.followup.send("Role message created", ephemeral=True)
 
+@bot.command()
+async def goodnomnomnomming(ctx):
+    await ctx.send(f"<:nomnomnomming:1423118737942511776> Good Nomnomnomming! <:nomnomnomming:1423118737942511776>")
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)

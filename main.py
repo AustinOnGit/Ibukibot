@@ -1,6 +1,7 @@
 import discord
 import os
 import logging
+import random
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv 
@@ -98,5 +99,16 @@ async def roles(interaction: discord.Interaction):
 @bot.command()
 async def goodnomnomnomming(ctx):
     await ctx.send(f"<:nomnomnomming:1423118737942511776> Good Nomnomnomming! <:nomnomnomming:1423118737942511776>")
+
+@bot.command()
+async def feeling(ctx):
+    blackwhite = random.choice(['black','white'])
+    match blackwhite:
+        case 'black':
+            await ctx.send(f"<:monokumablack:1427714063437140029>")
+        case 'white':
+            await ctx.send(f"<:monokumawhite:1427714075185647759>")
+
+    
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)

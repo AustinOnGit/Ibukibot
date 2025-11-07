@@ -2,6 +2,7 @@ import discord
 import os
 import logging
 import random
+import time
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv 
@@ -16,6 +17,9 @@ intents.message_content = True
 intents.members = True
 intents.reactions = True
 intents.guilds = True
+landmineMax = 10
+landmineArray = [False]*landmineMax
+landmineCount = 0
 
 bot = commands.Bot(command_prefix='!',intents=intents)
 
@@ -25,6 +29,17 @@ async def on_ready():
     await bot.tree.sync(guild=discord.Object(id=1423048695259201640))
     print(f"Good Nomnomnomming!")
 
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    if not(message.content.startswith("!")):
+        stepNumber = random.randrange(0,landmineMax)
+        if landmineArray[stepNumber] == True:
+            await message.channel.send(f"mine exploded")
+            landmineArray[stepNumber] = False
+
+    await bot.process_commands(message)
 
 #code for adding a role via reaction
 @bot.event
@@ -109,6 +124,25 @@ async def feeling(ctx):
         case 'white':
             await ctx.send(f"<:monokumawhite:1427714075185647759>")
 
-    
+@bot.command()
+async def placemine(ctx):
+    mineNumber = random.randrange(0,landmineMax)
+
+    if landmineArray.count(True) >= landmineMax:
+        await ctx.send(f"max number of mines placed")
+        return
+
+    if landmineArray[mineNumber] == False:
+        await ctx.send(f"mine {mineNumber} placed")
+        landmineArray[mineNumber] = True
+        return
+    elif landmineArray[mineNumber] == True:
+        await ctx.send(f"mine {mineNumber} has already been placed")
+        await placemine(ctx)
+
+
+@bot.command()
+async def showmines(ctx):
+    await ctx.send(landmineArray)    
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)

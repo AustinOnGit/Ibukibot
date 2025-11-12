@@ -3,6 +3,7 @@ import os
 import logging
 import random
 import time
+from datetime import datetime, timedelta
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv 
@@ -20,6 +21,7 @@ intents.guilds = True
 landmineMax = 10
 landmineArray = [False]*landmineMax
 landmineCount = 0
+duration = timedelta(seconds=30)
 
 bot = commands.Bot(command_prefix='!',intents=intents)
 
@@ -36,7 +38,8 @@ async def on_message(message):
     if not(message.content.startswith("!")):
         stepNumber = random.randrange(0,landmineMax)
         if landmineArray[stepNumber] == True:
-            await message.channel.send(f"mine exploded")
+            await message.author.timeout(duration, reason = "You exploded a mine. Wait 30 seconds to respawn.")
+            await message.channel.send(f"Mine exploded. Please wait 30 seconds to respawn", hidden=True)
             landmineArray[stepNumber] = False
 
     await bot.process_commands(message)
@@ -140,9 +143,9 @@ async def placemine(ctx):
         await ctx.send(f"mine {mineNumber} has already been placed")
         await placemine(ctx)
 
-
 @bot.command()
 async def showmines(ctx):
-    await ctx.send(landmineArray)    
+    await ctx.send(landmineArray)
+    await ctx.send(f"{landmineArray.count(True)} mines have been placed ")    
 
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)
